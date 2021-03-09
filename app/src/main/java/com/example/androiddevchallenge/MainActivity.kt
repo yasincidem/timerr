@@ -108,7 +108,7 @@ data class CounterState(
 
 class CounterViewModel(initialState: CounterState) :
     MavericksViewModel<CounterState>(initialState) {
-    lateinit var timer: CountDownTimer
+    private var timer: CountDownTimer? = null
     fun updateTimer(time: Long) = setState { copy(currentTime = time) }
     fun setHour(hour: Int) {
         setState { copy(hour = hour) }
@@ -123,8 +123,8 @@ class CounterViewModel(initialState: CounterState) :
     fun setTimerVisibility(isVisible: Boolean) = setState { copy(isTimerVisible = isVisible) }
     fun selectAction(actionId: Int?) = setState { copy(selectedActionId = actionId) }
     fun setTimer(value: Long) = setState { copy(time = value) }.apply {
-        if (this@CounterViewModel::timer.isInitialized) {
-            timer.cancel()
+        if (this@CounterViewModel.timer != null) {
+            timer?.cancel()
         }
         timer = object : CountDownTimer(value, 1000L) {
             override fun onTick(millisUntilFinished: Long) {
@@ -143,7 +143,7 @@ class CounterViewModel(initialState: CounterState) :
     @SuppressLint("MissingSuperCall")
     override fun onCleared() {
         super.onCleared()
-        timer.cancel()
+        timer?.cancel()
     }
 }
 
